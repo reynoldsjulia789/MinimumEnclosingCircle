@@ -47,11 +47,18 @@ public class Program
                 fileCoordinates.Add(new(x, y));
             }
 
+            if (fileCoordinates.Count == 0)
+            {
+                Console.WriteLine($"No coordinates were able to be read from {Path.GetFileName(filepath)}");
+                continue;
+            }
+
             files.Add(fileCoordinates);
             fileCoordinates.Clear();
 
             Console.Write($"{Path.GetFileName(filepath), -30} - ");
-            Console.WriteLine($"{lines.Length - failed, 6:N0} coordinates {((failed > 0) ? $", {failed} failed" : "" )}");
+            Console.Write($"{lines.Length - failed,6:N0} coordinates");
+            Console.WriteLine($" {((failed > 0) ? $", {failed, 3:N0} failed" : "" )}");
         }
 
         Console.WriteLine();
