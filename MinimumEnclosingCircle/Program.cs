@@ -111,7 +111,7 @@ public class Program
         }
 
         List<List<Vector2>> files = [];
-        List<Vector2> fileCoordinates = [];
+        //List<Vector2> fileCoordinates = [];
 
         Console.WriteLine();
         Console.WriteLine($"Attempting to read files from {graphDirectory}");
@@ -120,6 +120,7 @@ public class Program
         foreach (string filepath in filepaths)
         {
             stopwatch.Restart();
+            List<Vector2> fileCoordinates = [];
 
             string[] lines = File.ReadAllLines(filepath);
             int failed = 0;
@@ -151,7 +152,7 @@ public class Program
             }
 
             files.Add(fileCoordinates);
-            fileCoordinates.Clear();
+            //fileCoordinates.Clear();
 
             stopwatch.Stop();
             Runtimes.ReadFileTimes.Add(stopwatch.Elapsed.TotalNanoseconds);
