@@ -1,0 +1,19 @@
+Language: C#
+IDE: Visual Studio
+OS: Windows
+CPU: 6 cores, 12 processors, 2.9 GHz base speed
+RAM: 32 GB
+
+Averages do not include input file read time.
+
+File: random_2d_points_500.txt
+Average runtime in ns: 185,800
+
+File: square.txt
+Average runtime in ns: 1,900
+
+File: 2d_points_3.txt
+Average runtime in ns: 1,508,300
+
+File: 2d_points_7.txt1
+Average runtime in ns: 3,336,233
