@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using System.Reflection.Metadata;
 
 namespace MinimumEnclosingCircle;
@@ -7,16 +8,65 @@ public class Program
 {
     private const string graphDirectory = "../Graphs";
 
+    private static class Runtimes
+    {
+        public static List<double> ReadFileTimes = [];
+        public static List<double> FindCircleTimes = [];
+    }
+
     public static void Main()
     {
+        Stopwatch stopwatch = new();
+
         PrintRunInstructions();
 
         // read points
-        List<ISet<Vector2>> filecontents = GetFileContents();
+        string[] filepaths = Directory.GetFiles(graphDirectory);
+
+        List<List<Vector2>> filecontents = GetFileContents(filepaths);
 
         // find min enclosing circle
+        List<Circle?> results = [];
+
+        Console.WriteLine("\r\nAttempting to find minimum enclosing circle for each file.");
+
+        foreach (var points in filecontents)
+        {
+            stopwatch.Restart();
+
+            results.Add(Welzl.GetMinimumEnclosingCircle(points));
+
+            stopwatch.Stop();
+            Runtimes.FindCircleTimes.Add(stopwatch.Elapsed.TotalNanoseconds);
+        }
 
         // print results
+        Console.WriteLine();
+        Console.WriteLine("Results:");
+
+        for (int idx = 0; idx < results.Count; idx++)
+        {
+            Console.WriteLine();
+
+            Console.WriteLine("---");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"File: {Path.GetFileName(filepaths[idx])}");
+            Console.ResetColor();
+
+            if (results[idx] is null)
+            {
+                Console.WriteLine("No circle found");
+                continue;
+            }
+
+            Console.WriteLine("\r\nRuntimes:");
+            Console.WriteLine($"\tFile Read Time   - {Runtimes.ReadFileTimes[idx]} ns");
+            Console.WriteLine($"\tFind Circle Time - {Runtimes.FindCircleTimes[idx]} ns");
+
+            Console.WriteLine("\r\nCircle:");
+            Console.WriteLine($"\tCenter: ({results[idx]!.Center.X}, {results[idx]!.Center.Y})");
+            Console.WriteLine($"\tRadius: {results[idx]!.Radius}");
+        }
     }
 
     /// <summary>
@@ -50,9 +100,9 @@ public class Program
     /// <returns>
     /// list of coordinates per file read, or an empty list if there were no files with usable coordinates.
     /// </returns>
-    private static List<ISet<Vector2>> GetFileContents()
+    private static List<List<Vector2>> GetFileContents(string[] filepaths)
     {
-        string[] filepaths = Directory.GetFiles(graphDirectory);
+        Stopwatch stopwatch = new();
 
         if (filepaths.Length == 0)
         {
@@ -60,8 +110,8 @@ public class Program
             return [];
         }
 
-        List<ISet<Vector2>> files = [];
-        HashSet<Vector2> fileCoordinates = [];
+        List<List<Vector2>> files = [];
+        List<Vector2> fileCoordinates = [];
 
         Console.WriteLine();
         Console.WriteLine($"Attempting to read files from {graphDirectory}");
@@ -69,6 +119,8 @@ public class Program
 
         foreach (string filepath in filepaths)
         {
+            stopwatch.Restart();
+
             string[] lines = File.ReadAllLines(filepath);
             int failed = 0;
 
@@ -90,11 +142,19 @@ public class Program
             if (fileCoordinates.Count == 0)
             {
                 Console.WriteLine($"No coordinates were able to be read from {Path.GetFileName(filepath)}");
+                files.Add([]);
+
+                stopwatch.Stop();
+                Runtimes.ReadFileTimes.Add(stopwatch.Elapsed.TotalNanoseconds);
+
                 continue;
             }
 
             files.Add(fileCoordinates);
             fileCoordinates.Clear();
+
+            stopwatch.Stop();
+            Runtimes.ReadFileTimes.Add(stopwatch.Elapsed.TotalNanoseconds);
 
             Console.Write($"{Path.GetFileName(filepath),-30} - ");
             Console.Write($"{lines.Length - failed,6:N0} coordinates");
