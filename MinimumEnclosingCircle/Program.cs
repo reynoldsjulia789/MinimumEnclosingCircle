@@ -60,8 +60,8 @@ public class Program
             }
 
             Console.WriteLine("\r\nRuntimes:");
-            Console.WriteLine($"\tFile Read Time   - {Runtimes.ReadFileTimes[idx]} ns");
-            Console.WriteLine($"\tFind Circle Time - {Runtimes.FindCircleTimes[idx]} ns");
+            Console.WriteLine($"\tFile Read Time   - {Runtimes.ReadFileTimes[idx]:N0} ns");
+            Console.WriteLine($"\tFind Circle Time - {Runtimes.FindCircleTimes[idx]:N0} ns");
 
             Console.WriteLine("\r\nCircle:");
             Console.WriteLine($"\tCenter: ({results[idx]!.Center.X}, {results[idx]!.Center.Y})");
